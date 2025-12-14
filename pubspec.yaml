@@ -68,6 +68,9 @@ flutter:
     - assets/img/model.png
     - assets/img/model2.png
     - assets/img/bg_splash.png
+    - assets/img/menu_latihan.png
+    - assets/img/diamond 1.png
+    - assets/img/pushup.png
   uses-material-design: true
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

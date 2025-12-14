@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'program_latihan.dart';
+import '../main.dart'; // <-- BARIS INI PENTING! Untuk mengakses MainScreen
 
 class LevelPage extends StatelessWidget {
   const LevelPage({super.key});
@@ -50,7 +51,7 @@ class LevelPage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const SessionPage()),
+                  MaterialPageRoute(builder: (context) => const MainScreen()),
                 );
               },
             ),
@@ -63,7 +64,7 @@ class LevelPage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const SessionPage()),
+                  MaterialPageRoute(builder: (context) => const MainScreen()),
                 );
               },
             ),
@@ -76,7 +77,7 @@ class LevelPage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const SessionPage()),
+                  MaterialPageRoute(builder: (context) => const MainScreen()),
                 );
               },
             ),

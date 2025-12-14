@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'menu_latihan.dart';
+import 'account_page.dart';
 
 class SessionPage extends StatelessWidget {
   const SessionPage({super.key});
@@ -61,7 +63,14 @@ class SessionPage extends StatelessWidget {
               title: "Day 1",
               subtitle: "5 Menit",
               image: 'assets/img/selesai.png',
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ChestWorkoutApp(),
+                  ),
+                );
+              },
               active: true,
             ),
 
@@ -98,25 +107,6 @@ class SessionPage extends StatelessWidget {
             ),
 
             const SizedBox(height: 90),
-          ],
-        ),
-      ),
-
-      bottomNavigationBar: Container(
-        height: 65,
-        decoration: const BoxDecoration(
-          color: Colors.black,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(25),
-            topRight: Radius.circular(25),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: const [
-            Icon(Icons.home, color: Colors.white, size: 30),
-            Icon(Icons.calendar_today, color: Colors.white, size: 30),
-            Icon(Icons.person, color: Colors.white, size: 30),
           ],
         ),
       ),
@@ -243,6 +233,6 @@ class SessionPage extends StatelessWidget {
           ),
         ),
       ],
-    ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.3);
+    ).animate().fadeIn(duration: 700.ms).slideY(begin: 0.7);
   }
 }
