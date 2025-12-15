@@ -1,4 +1,4 @@
-// lib/component/navbar.dart
+// Lokasi: lib/component/navbar.dart
 
 import 'package:flutter/material.dart';
 
@@ -15,26 +15,32 @@ class CustomBottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
+      backgroundColor: Colors.white,
       currentIndex: currentIndex,
+      onTap: onTap,
+      type: BottomNavigationBarType.fixed,
       selectedItemColor: Colors.red,
       unselectedItemColor: Colors.grey,
-      type: BottomNavigationBarType.fixed, // Memastikan label selalu terlihat
+      showUnselectedLabels: true,
+      showSelectedLabels: true,
+      selectedFontSize: 12,
+      unselectedFontSize: 12,
+      iconSize: 28,
+      elevation: 8,
       items: const [
         BottomNavigationBarItem(
-          icon: Icon(Icons.list_alt),
-          label: 'Latihan', // Indeks 0: Latihan
+          icon: Icon(Icons.fitness_center),
+          label: 'Latihan',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.calendar_today),
-          label: 'Kalender', // Indeks 1: Kalender / Laporan
+          icon: Icon(Icons.bar_chart),
+          label: 'Laporan',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.person),
-          label: 'Profil', // Indeks 2: Akun
+          label: 'Profil',
         ),
       ],
-      // Meneruskan event klik ke fungsi onTap yang diberikan oleh parent widget
-      onTap: onTap,
     );
   }
 }

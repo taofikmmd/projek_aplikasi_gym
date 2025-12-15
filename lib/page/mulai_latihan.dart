@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
 
 class WorkoutDetailPage extends StatelessWidget {
-  const WorkoutDetailPage({super.key});
+  // Tambahan parameter agar halaman ini dinamis
+  final String workoutName;
+  final String reps;
+  final String? imagePath; // Opsional, jika ada gambar
+  
+  const WorkoutDetailPage({
+    super.key, 
+    this.workoutName = 'Latihan', 
+    this.reps = '',
+    this.imagePath,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +23,7 @@ class WorkoutDetailPage extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pop(context); // Kembali ke halaman sebelumnya
+            Navigator.pop(context); // Kembali tanpa menyimpan progres
           },
         ),
       ),
@@ -24,20 +34,28 @@ class WorkoutDetailPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Spacer(flex: 1), // Dorong konten sedikit ke bawah
+              
               // --- BAGIAN GAMBAR ---
-              // Ganti dengan Image.asset('assets/images/pushup.png') jika file lokal
-              Image.asset(
-                'assets/img/pushup.png', // Contoh placeholder
-                height: 250,
-                fit: BoxFit.contain,
-              ),
+              // Logika: Jika ada imagePath gunakan itu, jika tidak gunakan placeholder default
+              imagePath != null 
+                  ? Image.asset(
+                      imagePath!, 
+                      height: 250,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                         // Fallback jika gambar tidak ditemukan
+                         return const Icon(Icons.fitness_center, size: 150, color: Colors.red);
+                      },
+                    )
+                  : const Icon(Icons.fitness_center, size: 150, color: Colors.red),
 
               const SizedBox(height: 30),
 
               // --- BAGIAN TEKS ---
-              const Text(
-                '50 Push Up',
-                style: TextStyle(
+              Text(
+                '$reps $workoutName', // Menggunakan data dinamis
+                textAlign: TextAlign.center,
+                style: const TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
@@ -45,14 +63,17 @@ class WorkoutDetailPage extends StatelessWidget {
               ),
 
               const Spacer(flex: 2), // Dorong tombol ke bawah
+              
               // --- TOMBOL SELESAI ---
               SizedBox(
                 width: double.infinity, // Lebar tombol memenuhi layar
                 height: 55, // Tinggi tombol
                 child: ElevatedButton(
                   onPressed: () {
-                    // Aksi ketika tombol ditekan
-                    Navigator.pop(context);
+                    // Aksi ketika tombol ditekan:
+                    // Kirim nilai 'true' ke halaman sebelumnya (menu_latihan)
+                    // menandakan latihan ini selesai.
+                    Navigator.pop(context, true);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(

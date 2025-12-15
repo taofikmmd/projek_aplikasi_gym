@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'program_latihan.dart';
-import '../main.dart'; // <-- BARIS INI PENTING! Untuk mengakses MainScreen
+import 'package:google_fonts/google_fonts.dart';
+import 'main_screen.dart'; // Import Main Screen agar bisa navigasi
 
 class LevelPage extends StatelessWidget {
   const LevelPage({super.key});
@@ -9,129 +9,126 @@ class LevelPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Stack(
-              children: [
-                SizedBox(
-                  width: double.infinity,
-                  height: 200,
-                  child: Image.asset('assets/img/level.png', fit: BoxFit.cover),
-                ),
-                Positioned(
-                  bottom: 16,
-                  left: 16,
-                  child: Text(
-                    "LEVEL LATIHAN",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      shadows: [
-                        Shadow(
-                          offset: Offset(0, 2),
-                          blurRadius: 4,
-                          color: Colors.black45,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 120),
-
-            _buildLevelButton(
-              icon: Icons.bar_chart,
-              title: "Pemula",
-              borderColor: Colors.red.shade400,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const MainScreen()),
-                );
-              },
-            ),
-            const SizedBox(height: 50),
-
-            _buildLevelButton(
-              icon: Icons.bar_chart,
-              title: "Menengah",
-              borderColor: Colors.red.shade400,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const MainScreen()),
-                );
-              },
-            ),
-            const SizedBox(height: 50),
-
-            _buildLevelButton(
-              icon: Icons.bar_chart,
-              title: "Lanjutan",
-              borderColor: Colors.red.shade400,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const MainScreen()),
-                );
-              },
-            ),
-
-            const SizedBox(height: 40),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                "Pelatih akan merancang program latihan yang paling sesuai",
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 40),
+              Text(
+                "Pilih Level Anda",
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.black87, fontSize: 14),
+                style: GoogleFonts.poppins(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
               ),
-            ),
-            const SizedBox(height: 40),
-          ],
+              const SizedBox(height: 10),
+              Text(
+                "Sesuaikan dengan kemampuan fisikmu saat ini",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 40),
+
+              // PILIHAN 1: PEMULA
+              _buildLevelCard(
+                context, 
+                "Pemula", 
+                "Baru memulai latihan fisik", 
+                Colors.green,
+                "Pemula"
+              ),
+              
+              const SizedBox(height: 20),
+
+              // PILIHAN 2: MENENGAH
+              _buildLevelCard(
+                context, 
+                "Menengah", 
+                "Sudah rutin berolahraga", 
+                Colors.orange,
+                "Menengah"
+              ),
+
+              const SizedBox(height: 20),
+
+              // PILIHAN 3: LANJUTAN
+              _buildLevelCard(
+                context, 
+                "Lanjutan", 
+                "Latihan intensitas tinggi", 
+                Colors.red,
+                "Lanjutan"
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildLevelButton({
-    required IconData icon,
-    required String title,
-    required Color borderColor,
-    required VoidCallback onTap,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 40),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: onTap,
-        child: Container(
-          height: 65,
-          decoration: BoxDecoration(
-            color: Colors.red.shade700,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: borderColor, width: 3),
+  Widget _buildLevelCard(BuildContext context, String title, String subtitle, Color color, String levelValue) {
+    return InkWell(
+      onTap: () {
+        // NAVIGASI KE MAIN SCREEN MEMBAWA DATA LEVEL
+        // Menggunakan pushReplacement agar tidak bisa back ke halaman pilih level
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MainScreen(userLevel: levelValue),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: Colors.white, size: 28),
-              const SizedBox(width: 12),
-              Text(
-                title,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: color.withOpacity(0.5), width: 2),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            )
+          ],
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              backgroundColor: color.withOpacity(0.1),
+              child: Icon(Icons.fitness_center, color: color),
+            ),
+            const SizedBox(width: 20),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
                 ),
-              ),
-            ],
-          ),
+                Text(
+                  subtitle,
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+            const Spacer(),
+            Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+          ],
         ),
       ),
     );

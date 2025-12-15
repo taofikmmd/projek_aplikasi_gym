@@ -2,13 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'level_page.dart';
-// lib/page/login_screen.dart
-
-// ... import lainnya ...
-
-
-// ...
-// Navigasi ke Level Selection
+import 'admin_page.dart'; // Pastikan file ini sudah dibuat
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,6 +15,35 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
+
+  void _handleLogin() {
+    String username = _usernameController.text.trim();
+    String password = _passwordController.text.trim();
+
+    // LOGIKA LOGIN ADMIN
+    if (username == 'admin' && password == 'admin123') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const AdminPage()),
+      );
+    } 
+    // LOGIKA LOGIN USER BIASA
+    else if (username.isNotEmpty && password.isNotEmpty) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LevelPage()),
+      );
+    } 
+    // JIKA KOSONG / SALAH
+    else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Masukkan Username dan Password! (Coba: admin / admin123)'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,15 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               elevation: 0,
                             ),
-                            onPressed: () {
-                              // Navigasi ke Halaman Level Selection setelah Login
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const LevelPage(),
-                                ),
-                              );
-                            },
+                            onPressed: _handleLogin, // Panggil fungsi login
                             child: const Text(
                               "Sign In",
                               style: TextStyle(
