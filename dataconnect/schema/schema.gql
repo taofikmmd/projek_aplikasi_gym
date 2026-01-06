@@ -1,0 +1,59 @@
+type User @table {
+  displayName: String!
+  email: String!
+  createdAt: Timestamp!
+  photoUrl: String
+  role: String
+}
+
+type Membership @table {
+  user: User!
+  membershipType: String!
+  startDate: Date!
+  endDate: Date!
+  status: String!
+  pricePaid: Float
+}
+
+type Class @table {
+  instructor: User
+  name: String!
+  startTime: Timestamp!
+  endTime: Timestamp!
+  date: Date!
+  capacity: Int!
+  description: String
+  location: String
+}
+
+type ClassBooking @table(key: ["user", "class"]) {
+  user: User!
+  class: Class!
+  bookedAt: Timestamp!
+  status: String!
+}
+
+type Equipment @table {
+  name: String!
+  type: String!
+  status: String!
+  lastMaintenanceDate: Date
+  location: String
+}
+
+type WorkoutSession @table {
+  user: User!
+  date: Date!
+  durationMinutes: Int!
+  notes: String
+  caloriesBurned: Int
+}
+
+type WorkoutExercise @table {
+  workoutSession: WorkoutSession!
+  exerciseName: String!
+  sets: Int!
+  reps: Int!
+  weightKg: Float!
+  notes: String
+}

@@ -1,8 +1,10 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Wajib ada
 import 'level_page.dart';
-import 'admin_page.dart'; // Pastikan file ini sudah dibuat
+import 'admin_page.dart';
+import 'register_screen.dart'; // Import file register yang baru dibuat
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,33 +17,55 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
+  bool _isLoading = false; // Untuk loading indicator
 
-  void _handleLogin() {
-    String username = _usernameController.text.trim();
+  // FUNGSI HELPER UNTUK PESAN ERROR
+  void _showSnackBar(String message, [Color color = Colors.red]) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message), backgroundColor: color));
+  }
+
+  // LOGIKA LOGIN DENGAN FIREBASE
+  Future<void> _handleLogin() async {
+    String email = _usernameController.text.trim();
     String password = _passwordController.text.trim();
 
-    // LOGIKA LOGIN ADMIN
-    if (username == 'admin' && password == 'admin123') {
+    // 1. Cek jika kosong
+    if (email.isEmpty || password.isEmpty) {
+      _showSnackBar("Email dan Password wajib diisi!");
+      return;
+    }
+
+    // 2. Logika Admin Manual
+    if (email == 'admin' && password == 'admin123') {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const AdminPage()),
       );
-    } 
-    // LOGIKA LOGIN USER BIASA
-    else if (username.isNotEmpty && password.isNotEmpty) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LevelPage()),
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      // 3. Login ke Firebase
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
       );
-    } 
-    // JIKA KOSONG / SALAH
-    else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Masukkan Username dan Password! (Coba: admin / admin123)'),
-          backgroundColor: Colors.red,
-        ),
-      );
+
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LevelPage()),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      // Jika login gagal (email salah/password salah)
+      _showSnackBar(e.message ?? "Login Gagal");
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -51,7 +75,6 @@ class _LoginScreenState extends State<LoginScreen> {
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-          // 1. BACKGROUND IMAGE
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -60,11 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-
-          // 2. OVERLAY GELAP
           Container(color: Colors.black.withOpacity(0.4)),
-
-          // 3. FORM LOGIN
           Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -77,10 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.3),
-                        width: 1,
-                      ),
+                      border: Border.all(color: Colors.white.withOpacity(0.3)),
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -94,104 +110,55 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         const SizedBox(height: 30),
-
                         _buildTextField(
                           controller: _usernameController,
-                          hint: "Masukan Username",
+                          hint: "Masukan Email", // Berubah jadi email
                           icon: Icons.person_outline,
                         ),
                         const SizedBox(height: 15),
-
                         _buildTextField(
                           controller: _passwordController,
                           hint: "Masukan kata sandi",
                           icon: Icons.lock_outline,
                           isPassword: true,
                         ),
-
                         const SizedBox(height: 30),
 
-                        // TOMBOL SIGN IN (MERAH)
+                        // TOMBOL SIGN IN
                         SizedBox(
                           width: double.infinity,
                           height: 50,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFFD32F2F),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              elevation: 0,
                             ),
-                            onPressed: _handleLogin, // Panggil fungsi login
-                            child: const Text(
-                              "Sign In",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
+                            onPressed: _isLoading ? null : _handleLogin,
+                            child: _isLoading
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                : const Text(
+                                    "Sign In",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                           ),
                         ),
 
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 15),
 
-                        // GARIS PEMISAH
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Divider(
-                                color: Colors.white.withOpacity(0.5),
+                        // TOMBOL KE HALAMAN REGISTER (Ini yang tadi error)
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const RegisterScreen(),
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                              ),
-                              child: Text(
-                                "ATAU",
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.7),
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Divider(
-                                color: Colors.white.withOpacity(0.5),
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        // TOMBOL GOOGLE
-                        SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: OutlinedButton.icon(
-                            style: OutlinedButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              side: const BorderSide(color: Colors.white),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                            ),
-                            onPressed: () {},
-                            icon: const FaIcon(
-                              FontAwesomeIcons.google,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                            label: const Text(
-                              "Masuk dengan Google",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                            );
+                          },
+                          child: const Text(
+                            "Belum punya akun? Daftar Sekarang",
+                            style: TextStyle(color: Colors.white),
                           ),
                         ),
                       ],
@@ -206,6 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  // Widget TextField tetap sama
   Widget _buildTextField({
     required TextEditingController controller,
     required String hint,
@@ -215,34 +183,24 @@ class _LoginScreenState extends State<LoginScreen> {
     return TextField(
       controller: controller,
       obscureText: isPassword && !_isPasswordVisible,
-      style: const TextStyle(color: Colors.black87),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(color: Colors.grey),
-        prefixIcon: Icon(icon, color: Colors.grey),
-        suffixIcon: isPassword
-            ? IconButton(
-                icon: Icon(
-                  _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                  color: Colors.grey,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _isPasswordVisible = !_isPasswordVisible;
-                  });
-                },
-              )
-            : null,
+        prefixIcon: Icon(icon),
         filled: true,
         fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 15,
-          horizontal: 20,
-        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
           borderSide: BorderSide.none,
         ),
+        suffixIcon: isPassword
+            ? IconButton(
+                icon: Icon(
+                  _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                ),
+                onPressed: () =>
+                    setState(() => _isPasswordVisible = !_isPasswordVisible),
+              )
+            : null,
       ),
     );
   }

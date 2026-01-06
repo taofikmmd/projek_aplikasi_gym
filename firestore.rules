@@ -1,0 +1,9 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Izinkan semua orang membaca dan menulis ke koleksi 'photos'
+    match /photos/{docId} {
+      allow read, write: if true; 
+    }
+  }
+}
